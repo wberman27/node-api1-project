@@ -22,9 +22,11 @@ server.get('/api/users/:id', async (req, res) =>{
     try{
         const {id} = req.params;
         const getHero = await Hero.findById(id)
+        //if id is falsy, send error message
         if(!getHero){
             res.status(404).json({ message: "The user with the specified ID does not exist" })
         }else{
+            //return the hero
             res.status(201).json(getHero)
         }
     }
@@ -36,10 +38,11 @@ server.get('/api/users/:id', async (req, res) =>{
 server.post('/api/users', async (req, res) =>{
     try{
         const newHero = await Hero.insert(req.body)
-
+        //if there is no name or bio, send error
         if(!newHero.name || !newHero.bio){
             res.status(400).json({ message: "Please provide name and bio for the user" })
         }else{
+            //return the new hero
             res.status(201).json(newHero)
         }
     }
@@ -52,9 +55,11 @@ server.delete('/api/users/:id', async (req, res) =>{
     try{
         const {id} = req.params
         const deleteUser = await Hero.remove(id)
+        //if id of deleteUser is falsy, send error message
         if(!deleteUser){
             res.status(404).json({ message: "The user with the specified ID does not exist" })
         }else{
+            //return deleted user
             res.status(201).json(deleteUser)
         }
     }
@@ -68,13 +73,16 @@ server.put('/api/users/:id', async (req, res) =>{
         const {id} = req.params
         const changes = req.body
         const updateUser = await Hero.update(id, changes)
-        if(!updateUser){
-            res.status(404).json({ message: "The user with the specified ID does not exist" })
+        //if there is no name or bio, send error
+        if(!changes.name || !changes.bio){
+            res.status(400).json({ message: "Please provide name and bio for the user" })
         }else{
-            if(!updateUser.name || !updateUser.bio){
-                res.status(400).json({ message: "Please provide name and bio for the user"})
+            //if id does not exist (is falsy), send error
+            if(!updateUser){
+                res.status(404).json({ message: "The user with the specified ID does not exist" })
             }else{
-                res.status(200).json(updateUser)
+            //return updated user
+            res.status(200).json(updateUser)
             }
         }
     }
